@@ -4,7 +4,7 @@
 #include "../utils/u_static.hpp"
 #include <string.h>
 
-SHORT_STRING cs_convar::GetName(void)
+SHORT_STRING cs_convar::GetName()
 {
 	return cs_process->read_ptr32<SHORT_STRING>(self + 0xC);
 }
@@ -26,17 +26,17 @@ void cs_convar::SetFloat(float v)
 	cs_process->write<uint32_t>(self + 0x2C, *(uint32_t*)&v ^ self);
 }
 
-SHORT_STRING cs_convar::GetString(void)
+SHORT_STRING cs_convar::GetString()
 {
 	return cs_process->read_ptr32<SHORT_STRING>(self + 0x24);
 }
 
-int cs_convar::GetInt(void)
+int cs_convar::GetInt()
 {
 	return cs_process->read<int>(self + 0x30) ^ self;
 }
 
-float cs_convar::GetFloat(void)
+float cs_convar::GetFloat()
 {
 	uint32_t v;
 	v = cs_process->read<uint32_t>(self + 0x2C) ^ self;

@@ -5,7 +5,7 @@
 class cs_virtual_table {
 	csptr_t self;
 public:
-	csptr_t address(void) const;
+	csptr_t address() const;
 	csptr_t function(int index);
 };
 

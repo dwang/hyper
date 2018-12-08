@@ -7,12 +7,12 @@
 #include "cs_player.hpp"
 
 namespace engine {
-	int       IsRunning(void);
-	int       GetLocalPlayer(void);
-	vec3      GetViewAngles(void);
-	void      SetViewAngles(vec3 v);
-	int       GetMaxClients(void);
-	bool      IsInGame(void);
+	int IsRunning();
+	int GetLocalPlayer();
+	vec3 GetViewAngles();
+	void SetViewAngles(vec3 v);
+	int GetMaxClients();
+	bool IsInGame();
 }
 
 namespace entity {

@@ -1,19 +1,19 @@
 #pragma once
 
-#include "../sdk/cs_types.hpp"
 #include <math.h>
+#include "../sdk/cs_types.hpp"
 
 #define RAD2DEG(x) ((float)(x) * (float)(180.f / 3.14159265358979323846f))
 #define DEG2RAD(x) ((float)(x) * (float)(3.14159265358979323846f / 180.f))
 
 namespace u_math {
-	void sincos(float radians, float *sine, float *cosine)
+	static void sincos(float radians, float *sine, float *cosine)
 	{
 		*sine = (float)sin(radians);
 		*cosine = (float)cos(radians);
 	}
 
-	void angle_vec(vec3 angles, vec3 *forward)
+	static void angle_vec(vec3 angles, vec3 *forward)
 	{
 		float sp, sy, cp, cy;
 		sincos(DEG2RAD(angles.x), &sp, &cp);
@@ -23,17 +23,17 @@ namespace u_math {
 		forward->z = -sp;
 	}
 
-	float vec_dot(vec3 v0, vec3 v1)
+	static float vec_dot(vec3 v0, vec3 v1)
 	{
 		return (v0.x * v1.x + v0.y * v1.y + v0.z * v1.z);
 	}
 
-	float vec_length(vec3 v)
+	static float vec_length(vec3 v)
 	{
 		return (v.x * v.x + v.y * v.y + v.z * v.z);
 	}
 
-	vec3 vec_sub(vec3 p0, vec3 p1)
+	static vec3 vec_sub(vec3 p0, vec3 p1)
 	{
 		vec3 r;
 
@@ -43,12 +43,12 @@ namespace u_math {
 		return r;
 	}
 
-	float vec_length_sqrt(vec3 p0)
+	static float vec_length_sqrt(vec3 p0)
 	{
 		return (float)sqrt(p0.x * p0.x + p0.y * p0.y + p0.z * p0.z);
 	}
 
-	vec3 vec_delta(vec3 p0, vec3 p1)
+	static vec3 vec_delta(vec3 p0, vec3 p1)
 	{
 		vec3  d;
 		float l;
@@ -59,12 +59,12 @@ namespace u_math {
 		return d;
 	}
 
-	float vec_distance(vec3 p0, vec3 p1)
+	static float vec_distance(vec3 p0, vec3 p1)
 	{
 		return vec_length_sqrt(vec_sub(p0, p1));
 	}
 
-	void vec_clamp(vec3 *v)
+	static void vec_clamp(vec3 *v)
 	{
 		if (v->x > 89.0f && v->x <= 180.0f) {
 			v->x = 89.0f;
@@ -79,7 +79,7 @@ namespace u_math {
 		v->z = 0;
 	}
 
-	void vec_normalize(vec3 *vec)
+	static void vec_normalize(vec3 *vec)
 	{
 		float radius;
 
@@ -87,7 +87,7 @@ namespace u_math {
 		vec->x *= radius, vec->y *= radius, vec->z *= radius;
 	}
 
-	vec3 vec_transform(vec3 p0, matrix3x4_t p1)
+	static vec3 vec_transform(vec3 p0, matrix3x4_t p1)
 	{
 		vec3 v;
 
@@ -97,7 +97,7 @@ namespace u_math {
 		return v;
 	}
 
-	vec3 vec_atd(vec3 vangle)
+	static vec3 vec_atd(vec3 vangle)
 	{
 		double y[2], p[2];
 
@@ -111,7 +111,7 @@ namespace u_math {
 		return vangle;
 	}
 
-	bool vec_min_max(vec3 eye, vec3 dir, vec3 min, vec3 max, float radius)
+	static bool vec_min_max(vec3 eye, vec3 dir, vec3 min, vec3 max, float radius)
 	{
 		vec3     delta;
 		uint32_t i;
@@ -138,7 +138,7 @@ namespace u_math {
 		return false;
 	}
 
-	void vec_angles(vec3 forward, vec3 *angles)
+	static void vec_angles(vec3 forward, vec3 *angles)
 	{
 		float tmp, yaw, pitch;
 

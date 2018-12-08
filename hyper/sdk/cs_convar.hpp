@@ -5,13 +5,13 @@
 class cs_convar {
 	csptr_t self;
 public:
-	SHORT_STRING GetName(void);
+	SHORT_STRING GetName();
 	void         SetString(const char *v);
 	void         SetInt(int v);
 	void         SetFloat(float v);
-	SHORT_STRING GetString(void);
-	int          GetInt(void);
-	float        GetFloat(void);
+	SHORT_STRING GetString();
+	int          GetInt();
+	float        GetFloat();
 };
 
 namespace cvar {

@@ -11,12 +11,12 @@ bool inputsystem::IsButtonDown(CS_BUTTONCODE button)
 	return (v >> (button & 31)) & 1;
 }
 
-vec2i inputsystem::GetMouseAnalog(void)
+vec2i inputsystem::GetMouseAnalog()
 {
 	return cs_process->read<vec2i>(cs_static->vt_inputsystem.address() + cs_static->m_dwAnalog);
 }
 
-vec2i inputsystem::GetMouseAnalogDelta(void)
+vec2i inputsystem::GetMouseAnalogDelta()
 {
 	return cs_process->read<vec2i>(cs_static->vt_inputsystem.address() + cs_static->m_dwAnalogDelta);
 }

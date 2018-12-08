@@ -11,6 +11,6 @@ namespace inputsystem {
 		MOUSE_5 = 111
 	} CS_BUTTONCODE;
 	bool  IsButtonDown(CS_BUTTONCODE button);
-	vec2i GetMouseAnalog(void);
-	vec2i GetMouseAnalogDelta(void);
+	vec2i GetMouseAnalog();
+	vec2i GetMouseAnalogDelta();
 }

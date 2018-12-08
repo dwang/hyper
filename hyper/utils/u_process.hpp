@@ -14,9 +14,9 @@ public:
 	u_process() : _name(L"csgo.exe"), _handle(0) {}
 	~u_process() { detach(); }
 
-	bool      attach(void);
-	void      detach(void);
-	bool      exists(void);
+	bool      attach();
+	void      detach();
+	bool      exists();
 	uintptr_t find_module(const wchar_t *name);
 	uintptr_t find_export(uintptr_t module, const char *name);
 	NTSTATUS  read(uintptr_t address, void *buffer, size_t length);
