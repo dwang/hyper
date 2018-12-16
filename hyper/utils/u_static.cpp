@@ -1,9 +1,11 @@
 #include "u_static.hpp"
+#include "u_process.hpp"
 #include "../sdk/cs_netvars.hpp"
 #include "../sdk/cs_interfaces.hpp"
 #include "../sdk/cs_convar.hpp"
+#include "../sdk/cs_player.hpp"
 
-#include "../common_includes.hpp"
+#include <cstdio>
 
 u_static* cs_static = new u_static();
 
@@ -36,6 +38,7 @@ void u_static::initialize_nv()
 	m_hActiveWeapon = t.offset("m_hActiveWeapon");
 	m_iShotsFired = t.offset("m_iShotsFired");
 	m_bIsScoped = t.offset("m_bIsScoped");
+	m_flFlashDuration = t.offset("m_flFlashDuration");
 	t = netvars::find("DT_BaseAnimating");
 	m_dwBoneMatrix = t.offset("m_nForceBone") + 0x1C;
 }
@@ -53,6 +56,9 @@ void u_static::initialize_vt()
 	vt_cvar = t.find("VEngineCvar");
 	t = interfaces::find(L"inputsystem.dll");
 	vt_inputsystem = t.find("InputSystemVersion");
+
+	client_dll = cs_process->find_module(L"client_panorama.dll");
+	engine_dll = cs_process->find_module(L"engine.dll");
 }
 
 csptr_t u_static::offset_entitylist()
@@ -104,6 +110,7 @@ bool u_static::initialize()
 		"    DT_CSPlayer:                     m_hActiveWeapon:     0x%x\n"
 		"    DT_CSPlayer:                     m_iShotsFired:       0x%x\n"
 		"    DT_CSPlayer:                     m_bIsScoped:         0x%x\n"
+		"    DT_CSPlayer:                     m_flFlashDuration:   0x%x\n"
 		"    DT_BaseAnimating:                m_dwBoneMatrix:      0x%x\n"
 		"[*]convars:\n"
 		"    sensitivity:                     %ff\n"
@@ -136,6 +143,7 @@ bool u_static::initialize()
 		m_hActiveWeapon,
 		m_iShotsFired,
 		m_bIsScoped,
+		m_flFlashDuration,
 		m_dwBoneMatrix,
 		cvar::find("sensitivity").GetFloat(),
 		cvar::find("volume").GetFloat(),

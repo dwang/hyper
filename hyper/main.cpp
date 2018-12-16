@@ -1,8 +1,18 @@
-#include "common_includes.hpp"
+#include "utils/u_static.hpp"
+#include "features/f_aim.hpp"
+#include "features/f_visuals.hpp"
+#include "config/c_config.hpp"
+#include "config/c_files.hpp"
+#include "sdk/cs_engine.hpp"
+
+#include <thread>
+#include <iostream>
 
 void aimbot() { cs_aim->aimbot(); }
 void triggerbot() { cs_aim->triggerbot(); }
-//void overlay() { cs_overlay->refresh(); }
+void glow() { cs_visuals->glow(); }
+void chams() { cs_visuals->chams(); }
+void no_hands() { cs_visuals->no_hands(); }
 
 int main()
 {
@@ -17,11 +27,15 @@ int main()
 
 	std::thread t_aimbot(aimbot);
 	std::thread t_triggerbot(triggerbot);
-	//std::thread t_overlay(overlay);
+	std::thread t_glow(glow);
+	std::thread t_chams(chams);
+	std::thread t_no_hands(no_hands);
 
 	t_aimbot.detach();
 	t_triggerbot.detach();
-	//t_overlay.detach();
+	t_glow.detach();
+	t_chams.detach();
+	t_no_hands.detach();
 
 	while (true)
 	{
@@ -50,7 +64,12 @@ int main()
 
 		if (GetAsyncKeyState(VK_END) & 0x8000 || FindWindowA(NULL, "Counter-Strike: Global Offensive") == NULL)
 		{
+			cvar::find("r_modelAmbientMin").SetFloat(0);
+			
 			t_aimbot.~thread();
+			t_triggerbot.~thread();
+			t_glow.~thread();
+			t_chams.~thread();
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			cs_process->detach();
 			break;

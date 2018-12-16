@@ -57,7 +57,7 @@ u_process* cs_process = new u_process();
 
 bool u_process::attach(void)
 {
-	void                 *snap = create_snapshot();
+	void *snap = create_snapshot();
 	struct process_entry entry;
 
 	if (snap == 0)
@@ -71,6 +71,7 @@ bool u_process::attach(void)
 			break;
 		}
 	}
+
 	close_snapshot(snap);
 	return _handle != 0;
 }
@@ -94,13 +95,13 @@ uintptr_t u_process::find_module(const wchar_t *name)
 	uintptr_t a0 = 0, a1 = 0, a2 = 0, a3[30];
 	uint32_t  rly[5];
 
-
 	if (_wow64) {
 		rly[0] = 0x04, rly[1] = 0x0C, rly[2] = 0x14, rly[3] = 0x28, rly[4] = 0x10;
 	}
 	else {
 		rly[0] = 0x08, rly[1] = 0x18, rly[2] = 0x20, rly[3] = 0x50, rly[4] = 0x20;
 	}
+
 	read(_peb + rly[1], &a0, rly[0]);
 	read(a0 + rly[2], &a0, rly[0]);
 	read(a0 + rly[0], &a1, rly[0]);
@@ -114,6 +115,7 @@ uintptr_t u_process::find_module(const wchar_t *name)
 		if (read(a0, &a0, rly[0]) != 0l)
 			break;
 	}
+
 	return 0;
 }
 

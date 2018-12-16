@@ -1,9 +1,11 @@
 #pragma once
 
-#include "../common_includes.hpp"
+#include "../sdk/cs_inputsystem.hpp"
 
+#define WIN32_LEAN_AND_MEAN  
 #include <Windows.h>
 #include <string>
+
 
 class c_config {
 public:

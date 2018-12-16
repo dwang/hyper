@@ -7,20 +7,20 @@ typedef long NTSTATUS;
 
 class u_process {
 	const wchar_t *_name;
-	HANDLE        _handle;
-	bool          _wow64;
-	uintptr_t     _peb;
+	HANDLE _handle;
+	bool _wow64;
+	uintptr_t _peb;
 public:
 	u_process() : _name(L"csgo.exe"), _handle(0) {}
 	~u_process() { detach(); }
 
-	bool      attach();
-	void      detach();
-	bool      exists();
+	bool attach();
+	void detach();
+	bool exists();
 	uintptr_t find_module(const wchar_t *name);
 	uintptr_t find_export(uintptr_t module, const char *name);
-	NTSTATUS  read(uintptr_t address, void *buffer, size_t length);
-	NTSTATUS  write(uintptr_t address, void *buffer, size_t length);
+	NTSTATUS read(uintptr_t address, void *buffer, size_t length);
+	NTSTATUS write(uintptr_t address, void *buffer, size_t length);
 	template<typename t>
 	inline t read(uintptr_t address)
 	{

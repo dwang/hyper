@@ -1,13 +1,22 @@
 #pragma once
 
-#include "../common_includes.hpp"
+#include <inttypes.h>
+#include <memory>
+#include <array>
+
+#include "../sdk/cs_interfaces.hpp"
+#include "../sdk/cs_player.hpp"
+#include "../utils/u_process.hpp"
 
 class u_static
 {
 public:
 	bool initialize();
 
+	csptr_t client_dll;
+	csptr_t engine_dll;
 	cs_virtual_table vt_client;
+	cs_virtual_table vt_client18;
 	cs_virtual_table vt_entity;
 	cs_virtual_table vt_engine;
 	cs_virtual_table vt_cvar;
@@ -34,6 +43,7 @@ public:
 	uint32_t m_iShotsFired;
 	uint32_t m_bIsScoped;
 	uint32_t m_dwBoneMatrix;
+	uint32_t m_flFlashDuration;
 
 private:
 	void initialize_nv();

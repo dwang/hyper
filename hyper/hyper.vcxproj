@@ -22,6 +22,7 @@
     <ClCompile Include="config\c_config.cpp" />
     <ClCompile Include="config\c_files.cpp" />
     <ClCompile Include="features\f_aim.cpp" />
+    <ClCompile Include="features\f_visuals.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sdk\cs_convar.cpp" />
     <ClCompile Include="sdk\cs_inputsystem.cpp" />
@@ -33,10 +34,10 @@
     <ClCompile Include="utils\u_static.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common_includes.hpp" />
     <ClInclude Include="config\c_config.hpp" />
     <ClInclude Include="config\c_files.hpp" />
     <ClInclude Include="features\f_aim.hpp" />
+    <ClInclude Include="features\f_visuals.hpp" />
     <ClInclude Include="sdk\cs_convar.hpp" />
     <ClInclude Include="sdk\cs_engine.hpp" />
     <ClInclude Include="sdk\cs_inputsystem.hpp" />
@@ -44,6 +45,7 @@
     <ClInclude Include="sdk\cs_netvars.hpp" />
     <ClInclude Include="sdk\cs_player.hpp" />
     <ClInclude Include="sdk\cs_types.hpp" />
+    <ClInclude Include="utils\u_color.hpp" />
     <ClInclude Include="utils\u_math.hpp" />
     <ClInclude Include="utils\u_process.hpp" />
     <ClInclude Include="utils\u_static.hpp" />

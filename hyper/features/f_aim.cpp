@@ -1,4 +1,12 @@
-#include "../common_includes.hpp"
+#include "f_aim.hpp"
+#include "../sdk/cs_engine.hpp"
+#include "../config/c_config.hpp"
+#include "../config/c_config.hpp"
+#include "../utils/u_math.hpp"
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <thread>
 
 f_aim* cs_aim = new f_aim();
 
@@ -12,25 +20,25 @@ int f_aim::crosshair_id(vec3 vangle, cs_player self)
 	bool status;
 
 	dir = u_math::vec_atd(vangle);
-	eye = self.GetEyePos();
+	eye = self.get_eye_pos();
 
 	for (i = 1; i < engine::GetMaxClients(); i++)
 	{
 		entity = entity::GetClientEntity(i);
 
-		if (!entity.IsValid())
+		if (!entity.is_valid())
 			continue;
 
-		id = entity.GetTeam();
+		id = entity.get_team_num();
 
-		if (!cvar::find("mp_teammates_are_enemies").GetInt() && self.GetTeam() == id)
+		if (!cvar::find("mp_teammates_are_enemies").GetInt() && self.get_team_num() == id)
 			continue;
 
 		id -= 2;
 
 		for (j = 6; j--;)
 		{
-			entity.GetBoneMatrix(hitbox_list[id][j].bone, &matrix);
+			entity.get_bone_matrix(hitbox_list[id][j].bone, &matrix);
 			status = u_math::vec_min_max(
 				eye,
 				dir,
@@ -66,10 +74,10 @@ bool f_aim::get_target(cs_player self, vec3 vangle)
 	{
 		entity = entity::GetClientEntity(i);
 
-		if (!entity.IsValid())
+		if (!entity.is_valid())
 			continue;
 
-		if (!cvar::find("mp_teammates_are_enemies").GetInt() && self.GetTeam() == entity.GetTeam())
+		if (!cvar::find("mp_teammates_are_enemies").GetInt() && self.get_team_num() == entity.get_team_num())
 			continue;
 
 		fov = get_fov(vangle, get_target_angle(self, entity));
@@ -156,8 +164,8 @@ vec3 f_aim::get_target_angle(cs_player self, cs_player target)
 	matrix3x4_t m;
 	vec3 c, p;
 
-	target.GetBoneMatrix(8, &m);
-	c = self.GetEyePos();
+	target.get_bone_matrix(8, &m);
+	c = self.get_eye_pos();
 
 	m[0][3] -= c.x, m[1][3] -= c.y, m[2][3] -= c.z;
 	c.x = m[0][3], c.y = m[1][3], c.z = m[2][3];
@@ -165,9 +173,9 @@ vec3 f_aim::get_target_angle(cs_player self, cs_player target)
 	u_math::vec_normalize(&c);
 	u_math::vec_angles(c, &c);
 
-	if (self.GetShotsFired() > 1)
+	if (self.get_shots_fired() > 1)
 	{
-		p = self.GetVecPunch();
+		p = self.get_vec_punch();
 		c.x -= p.x * 2.0f, c.y -= p.y * 2.0f, c.z -= p.z * 2.0f;
 	}
 
@@ -215,15 +223,15 @@ void f_aim::aimbot()
 		{
 			self = entity::GetClientEntity(engine::GetLocalPlayer());
 			vangle = engine::GetViewAngles();
-			current_tick = self.GetTickCount();
+			current_tick = self.get_tick_count();
 			flsensitivity = cvar::find("sensitivity").GetFloat();
 
-			if (self.IsScoped())
-				flsensitivity = (self.GetFov() / 90.0f) * flsensitivity;
+			if (self.is_scoped())
+				flsensitivity = (self.get_fov() / 90.0f) * flsensitivity;
 
 			if (aimbot_enabled && inputsystem::IsButtonDown(cs_config->aimbot.button))
 			{
-				if (!target.IsValid() && !get_target(self, vangle))
+				if (!target.is_valid() && !get_target(self, vangle))
 					return;
 
 				aim_at_target(vangle, get_target_angle(self, target));

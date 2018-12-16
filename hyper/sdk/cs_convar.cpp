@@ -43,6 +43,11 @@ float cs_convar::GetFloat()
 	return *(float*)&v;
 }
 
+csptr_t cs_convar::GetPointer()
+{
+	return self;
+}
+
 cs_convar cvar::find(const char *name)
 {
 	csptr_t a0;

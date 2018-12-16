@@ -12,6 +12,7 @@ public:
 	SHORT_STRING GetString();
 	int          GetInt();
 	float        GetFloat();
+	csptr_t		 GetPointer();
 };
 
 namespace cvar {

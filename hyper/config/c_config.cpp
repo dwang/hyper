@@ -1,4 +1,10 @@
-#include "../common_includes.hpp"
+#include "c_config.hpp"
+#include "c_files.hpp"
+
+#include "../sdk/cs_inputsystem.hpp"
+
+#include <fstream>
+#include <filesystem>
 
 #define caseStringify(x) case x: return std::string(#x)
 

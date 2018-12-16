@@ -2,7 +2,7 @@
 #include "../utils/u_process.hpp"
 #include <string.h>
 
-csptr_t cs_virtual_table::address(void) const
+csptr_t cs_virtual_table::address() const
 {
 	return self;
 }

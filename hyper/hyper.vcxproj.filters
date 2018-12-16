@@ -51,11 +51,11 @@
     <ClCompile Include="config\c_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="features\f_visuals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="common_includes.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="sdk\cs_convar.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,6 +93,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="config\c_config.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="features\f_visuals.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\u_color.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

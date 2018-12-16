@@ -3,95 +3,112 @@
 #include "../utils/u_static.hpp"
 #include "cs_interfaces.hpp"
 
-int cs_player::GetTeam()
+int cs_player::get_team_num()
 {
-	return cs_process->read<int>(self + cs_static->m_iTeamNum);
+	return cs_process->read<int>(base + cs_static->m_iTeamNum);
 }
 
-int cs_player::GetHealth()
+int cs_player::get_health()
 {
-	return cs_process->read<int>(self + cs_static->m_iHealth);
+	return cs_process->read<int>(base + cs_static->m_iHealth);
 }
 
-int cs_player::GetLifeState()
+int cs_player::get_class_id()
 {
-	return cs_process->read<int>(self + cs_static->m_lifeState);
+	uintptr_t vtable = cs_process->read<uintptr_t>(base + 0x8); // IClientNetworkable
+	uintptr_t fn = cs_process->read<uintptr_t>(vtable + 0x8); // 4 bytes per fn, 2nd index
+	uintptr_t ptr = cs_process->read<uintptr_t>(fn + 0x1); // mov eax, ptr_to_client_class
+	return cs_process->read<int>(ptr + 0x14);
 }
 
-int cs_player::GetTickCount()
+int cs_player::get_glow_index()
 {
-	return cs_process->read<int>(self + cs_static->m_nTickBase);
+	return cs_process->read<int>(base + cs_static->m_flFlashDuration + 24);
 }
 
-int cs_player::GetShotsFired()
+int cs_player::get_life_state()
 {
-	return cs_process->read<int>(self + cs_static->m_iShotsFired);
+	return cs_process->read<int>(base + cs_static->m_lifeState);
 }
 
-bool cs_player::IsScoped()
+int cs_player::get_tick_count()
 {
-	return cs_process->read<bool>(self + cs_static->m_bIsScoped);
+	return cs_process->read<int>(base + cs_static->m_nTickBase);
 }
 
-bool cs_player::IsDormant()
+int cs_player::get_shots_fired()
+{
+	return cs_process->read<int>(base + cs_static->m_iShotsFired);
+}
+
+bool cs_player::is_scoped()
+{
+	return cs_process->read<bool>(base + cs_static->m_bIsScoped);
+}
+
+bool cs_player::is_dormant()
 {
 	csptr_t a;
 
-	a = (csptr_t)(self + 0x8);
+	a = (csptr_t)(base + 0x8);
 	return cs_process->read<bool>(a + cs_process->read<uint8_t>((*(cs_virtual_table*)&a).function(9) + 0x8));
 }
 
-csptr_t cs_player::GetWeapon()
+csptr_t cs_player::get_weapon()
 {
 	csptr_t v;
 
-	v = cs_process->read<csptr_t>(self + cs_static->m_hActiveWeapon);
+	v = cs_process->read<csptr_t>(base + cs_static->m_hActiveWeapon);
 	return cs_process->read<csptr_t>(cs_static->dwEntityList + ((v & 0xFFF) - 1) * 0x10);
 }
 
-vec3 cs_player::GetOrigin()
+vec3 cs_player::get_origin()
 {
-	return cs_process->read<vec3>(self + cs_static->m_vecOrigin);
+	return cs_process->read<vec3>(base + cs_static->m_vecOrigin);
 }
 
-vec3 cs_player::GetVecView()
+vec3 cs_player::get_vec_view()
 {
-	return cs_process->read<vec3>(self + cs_static->m_vecViewOffset);
+	return cs_process->read<vec3>(base + cs_static->m_vecViewOffset);
 }
 
-vec3 cs_player::GetEyePos()
+vec3 cs_player::get_eye_pos()
 {
 	vec3 v, o, r;
-	v = this->GetVecView();
-	o = this->GetOrigin();
+	v = get_vec_view();
+	o = get_origin();
 	r.x = v.x += o.x; r.y = v.y += o.y; r.z = v.z += o.z;
 	return r;
 }
 
-vec3 cs_player::GetVecVelocity()
+vec3 cs_player::get_vec_velocity()
 {
-	return cs_process->read<vec3>(self + cs_static->m_vecViewOffset);
+	return cs_process->read<vec3>(base + cs_static->m_vecViewOffset);
 }
 
-vec3 cs_player::GetVecPunch()
+vec3 cs_player::get_vec_punch()
 {
-	return cs_process->read<vec3>(self + cs_static->m_vecPunch);
+	return cs_process->read<vec3>(base + cs_static->m_vecPunch);
 }
 
-int cs_player::GetFov()
+int cs_player::get_fov()
 {
-	return cs_process->read<int>(self + cs_static->m_iFOV);
+	return cs_process->read<int>(base + cs_static->m_iFOV);
 }
 
-void cs_player::GetBoneMatrix(int index, matrix3x4_t *out)
+void cs_player::get_bone_matrix(int index, matrix3x4_t *out)
 {
-	cs_process->read(cs_process->read<csptr_t>(self + cs_static->m_dwBoneMatrix) + 0x30 * index, out, sizeof(matrix3x4_t));
+	cs_process->read(cs_process->read<csptr_t>(base + cs_static->m_dwBoneMatrix) + 0x30 * index, out, sizeof(matrix3x4_t));
 }
 
-bool cs_player::IsValid()
+bool cs_player::is_valid()
 {
-	int health = GetHealth();
+	int health = get_health();
 
-	return self && GetLifeState() == 0 && health > 0 && health < 1337;
+	return base && get_life_state() == 0 && health > 0 && health < 1337;
 }
 
+csptr_t cs_player::get_pointer()
+{
+	return base;
+}
