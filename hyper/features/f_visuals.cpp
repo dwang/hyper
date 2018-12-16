@@ -3,9 +3,9 @@
 #include "../utils/u_process.hpp"
 #include "../sdk/cs_engine.hpp"
 
-#include <thread>
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <iostream>
+#include <thread>
 
 f_visuals* cs_visuals = new f_visuals();
 
@@ -28,7 +28,7 @@ void f_visuals::glow()
 		if (!engine::IsInGame() /*|| !glow_enabled*/)
 			continue;
 
-		uintptr_t obj_manager = cs_process->read<uintptr_t>(cs_static->client_dll + 0x5203328);
+		uintptr_t obj_manager = cs_process->read<uintptr_t>(cs_static->client_dll + cs_static->m_dwGlowObjectManager);
 
 		self = entity::GetClientEntity(engine::GetLocalPlayer());
 
@@ -100,7 +100,7 @@ void f_visuals::no_hands()
 		if (!engine::IsInGame())
 			continue;
 
-		cs_process->write<int>(cs_process->read<uintptr_t>(cs_static->client_dll + 0xCB3694) + 0x258, 0);
+		cs_process->write<int>(cs_process->read<uintptr_t>(cs_static->client_dll + cs_static->m_dwLocalPlayer) + 0x258, 0);
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}

@@ -21,6 +21,8 @@ public:
 	uintptr_t find_export(uintptr_t module, const char *name);
 	NTSTATUS read(uintptr_t address, void *buffer, size_t length);
 	NTSTATUS write(uintptr_t address, void *buffer, size_t length);
+	uintptr_t find_pattern(const wchar_t* module_name, const char* pattern);
+	uintptr_t get_module_size(const wchar_t* module_name);
 	template<typename t>
 	inline t read(uintptr_t address)
 	{

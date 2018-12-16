@@ -14,6 +14,7 @@ public:
 	int get_shots_fired();
 	bool is_scoped();
 	bool is_dormant();
+	bool is_on_ground();
 	csptr_t get_weapon();
 	vec3 get_origin();
 	vec3 get_vec_view();

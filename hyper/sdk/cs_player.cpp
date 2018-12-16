@@ -3,6 +3,9 @@
 #include "../utils/u_static.hpp"
 #include "cs_interfaces.hpp"
 
+#define FL_ONGROUND	(1 << 0)
+#define FL_PARTIALGROUND (1 << 18)
+
 int cs_player::get_team_num()
 {
 	return cs_process->read<int>(base + cs_static->m_iTeamNum);
@@ -52,6 +55,12 @@ bool cs_player::is_dormant()
 
 	a = (csptr_t)(base + 0x8);
 	return cs_process->read<bool>(a + cs_process->read<uint8_t>((*(cs_virtual_table*)&a).function(9) + 0x8));
+}
+
+bool cs_player::is_on_ground()
+{
+	int flags = cs_process->read<int>(base + cs_static->m_fFlags);
+	return ((flags & FL_ONGROUND) || (flags & FL_PARTIALGROUND));
 }
 
 csptr_t cs_player::get_weapon()

@@ -3,6 +3,13 @@
 
 #pragma comment(lib, "ntdll.lib")
 
+namespace windows {
+#include <Windows.h>
+#include <winnt.h>
+#include <malloc.h>
+#include <TlHelp32.h>
+}
+
 #ifdef _WIN64
 #define SNAP_LENGTH 0x188
 #define SNAP_NAME   0x040
@@ -20,6 +27,10 @@
 #endif
 
 #define IS_WOW64_ADDRESS(address) (address <= 0xffffffffUL)
+
+#define INRANGE(x,a,b) (x >= a && x <= b)
+#define GETBITS(x) (INRANGE(x, '0', '9') ? (x - '0') : ((x&(~0x20)) - 'A' + 0xa))
+#define GETBYTE(x) (GETBITS(x[0]) << 4 | GETBITS(x[1]))
 
 struct process_entry {
 	const wchar_t *name;
@@ -122,7 +133,7 @@ uintptr_t u_process::find_module(const wchar_t *name)
 uintptr_t u_process::find_export(uintptr_t module, const char *name)
 {
 	uintptr_t a0;
-	uint32_t  a1[4], a2[30];
+	uint32_t a1[4], a2[30];
 
 	a0 = module + read<uint16_t>(module + 0x3C);
 	a0 = module + read<uint32_t>(a0 + 0x88 - _wow64 * 16);
@@ -147,7 +158,94 @@ NTSTATUS u_process::write(uintptr_t address, void *buffer, size_t length)
 	return NtWriteVirtualMemory(_handle, (PVOID)address, buffer, length, 0);
 }
 
-static void *create_snapshot(void)
+uintptr_t u_process::find_pattern(const wchar_t* module_name, const char* pattern)
+{
+	auto mod = find_module(module_name);
+
+	static auto compare_bytes = [](const windows::byte* bytes, const char* pattern) -> bool
+	{
+		for (; *pattern; *pattern != ' ' ? ++bytes : bytes, ++pattern) {
+			if (*pattern == ' ' || *pattern == '?')
+				continue;
+			if (*bytes != GETBYTE(pattern))
+				return false;
+			++pattern;
+		}
+		return true;
+	};
+
+	auto get_text_section = [&](uintptr_t& start, size_t& size)
+	{
+		auto header = (windows::byte*)windows::malloc(0x1000);
+		read(mod, header, 0x1000);
+
+		auto pDosHdr = (const windows::IMAGE_DOS_HEADER*)(header);
+		if (pDosHdr->e_magic != IMAGE_DOS_SIGNATURE)
+		{
+			::windows::free(header);
+			return false;
+		}
+		const windows::IMAGE_NT_HEADERS *pImageHdr = (const windows::IMAGE_NT_HEADERS*)((uint8_t*)pDosHdr + pDosHdr->e_lfanew);
+
+		if (pImageHdr->Signature != IMAGE_NT_SIGNATURE)
+		{
+			::windows::free(header);
+			return false;
+		}
+
+		auto pSection = (const windows::IMAGE_SECTION_HEADER*)((uint8_t*)pImageHdr + sizeof(windows::IMAGE_NT_HEADERS));
+		for (int i = 0; i < pImageHdr->FileHeader.NumberOfSections; ++i, pSection++)
+		{
+			if (_stricmp((windows::LPCSTR)pSection->Name, ".text") == 0)
+			{
+				start = (uintptr_t)(mod + pSection->VirtualAddress);
+				size = pSection->Misc.VirtualSize;
+				::windows::free(header);
+				return true;
+			}
+		}
+
+		::windows::free(header);
+		return false;
+	};
+
+	uintptr_t base; size_t size;
+	if (!get_text_section(base, size))
+	{
+		base = mod;
+		size = get_module_size(module_name);
+	}
+
+	auto pb = (windows::byte*)windows::malloc(size);
+	auto max = size;
+	read(base, pb, size);
+
+	uintptr_t offset = 0;
+	for (auto off = 0UL; off < max; ++off) {
+		if (compare_bytes(pb + off, pattern)) {
+			offset = base + off;
+			break;
+		}
+	}
+
+	return offset;
+}
+
+uintptr_t u_process::get_module_size(const wchar_t* module_name)
+{
+	windows::HMODULE hModule = windows::GetModuleHandle((char*)module_name);
+
+	if (!hModule)
+		return 0;
+
+	windows::PIMAGE_DOS_HEADER pImage_Dos_Header = windows::PIMAGE_DOS_HEADER(hModule);
+	windows::PIMAGE_NT_HEADERS pImage_PE_Header = windows::PIMAGE_NT_HEADERS(long(hModule) + pImage_Dos_Header->e_lfanew);
+	windows::PIMAGE_OPTIONAL_HEADER pImage_Optional_Header = &pImage_PE_Header->OptionalHeader;
+
+	return pImage_Optional_Header->SizeOfCode;
+}
+
+static void *create_snapshot()
 {
 	struct process_snap *snap = new process_snap;
 	uint32_t length = 0;
@@ -166,7 +264,6 @@ static void *create_snapshot(void)
 		return 0;
 	}
 
-	/* this ***** needs more memory than requires sometimes */
 	length += 4096;
 	snap->first = new char[length];
 	status = NtQuerySystemInformation(
@@ -212,7 +309,7 @@ static bool get_next_process(void *snapshot, struct process_entry *entry)
 static uintptr_t teb_to_peb(HANDLE process, uintptr_t teb, bool wow64)
 {
 	uintptr_t peb = 0;
-	int       length, offset;
+	int length, offset;
 
 	if (wow64) {
 		length = 4, offset = 0x2030;
@@ -223,4 +320,3 @@ static uintptr_t teb_to_peb(HANDLE process, uintptr_t teb, bool wow64)
 	NtReadVirtualMemory(process, (PVOID)((char*)teb + offset), &peb, length, 0);
 	return peb;
 }
-

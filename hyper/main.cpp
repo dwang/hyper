@@ -1,6 +1,7 @@
 #include "utils/u_static.hpp"
 #include "features/f_aim.hpp"
 #include "features/f_visuals.hpp"
+#include "features/f_misc.hpp"
 #include "config/c_config.hpp"
 #include "config/c_files.hpp"
 #include "sdk/cs_engine.hpp"
@@ -13,6 +14,7 @@ void triggerbot() { cs_aim->triggerbot(); }
 void glow() { cs_visuals->glow(); }
 void chams() { cs_visuals->chams(); }
 void no_hands() { cs_visuals->no_hands(); }
+void bunnyhop() { cs_misc->bunnyhop(); }
 
 int main()
 {
@@ -30,12 +32,14 @@ int main()
 	std::thread t_glow(glow);
 	std::thread t_chams(chams);
 	std::thread t_no_hands(no_hands);
+	std::thread t_bunnyhop(bunnyhop);
 
 	t_aimbot.detach();
 	t_triggerbot.detach();
 	t_glow.detach();
 	t_chams.detach();
 	t_no_hands.detach();
+	t_bunnyhop.detach();
 
 	while (true)
 	{

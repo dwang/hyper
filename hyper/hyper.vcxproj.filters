@@ -54,6 +54,9 @@
     <ClCompile Include="features\f_visuals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="features\f_misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sdk\cs_convar.hpp">
@@ -99,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utils\u_color.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="features\f_misc.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

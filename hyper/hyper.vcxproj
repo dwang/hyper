@@ -22,6 +22,7 @@
     <ClCompile Include="config\c_config.cpp" />
     <ClCompile Include="config\c_files.cpp" />
     <ClCompile Include="features\f_aim.cpp" />
+    <ClCompile Include="features\f_misc.cpp" />
     <ClCompile Include="features\f_visuals.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sdk\cs_convar.cpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="config\c_config.hpp" />
     <ClInclude Include="config\c_files.hpp" />
     <ClInclude Include="features\f_aim.hpp" />
+    <ClInclude Include="features\f_misc.hpp" />
     <ClInclude Include="features\f_visuals.hpp" />
     <ClInclude Include="sdk\cs_convar.hpp" />
     <ClInclude Include="sdk\cs_engine.hpp" />

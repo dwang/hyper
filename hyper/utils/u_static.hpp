@@ -37,6 +37,7 @@ public:
 	uint32_t m_vecVelocity;
 	uint32_t m_vecPunch;
 	uint32_t m_iFOV;
+	uint32_t m_fFlags;
 	uint32_t m_iTeamNum;
 	uint32_t m_vecOrigin;
 	uint32_t m_hActiveWeapon;
@@ -44,6 +45,10 @@ public:
 	uint32_t m_bIsScoped;
 	uint32_t m_dwBoneMatrix;
 	uint32_t m_flFlashDuration;
+	uint32_t m_dwLocalPlayer;
+	uint32_t m_dwClientState;
+	uint32_t m_dwGlowObjectManager;
+	uint32_t m_dwForceJump;
 
 private:
 	void initialize_nv();
