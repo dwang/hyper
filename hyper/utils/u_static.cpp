@@ -95,13 +95,13 @@ bool u_static::initialize()
 	initialize_nv();
 
 	printf(
-		"[*]vtables:\n"
+		"[*] vtables:\n"
 		"    VClient:                         0x%lx\n"
 		"    VClientEntityList:               0x%lx\n"
 		"    VEngineClient:                   0x%lx\n"
 		"    VEngineCvar:                     0x%lx\n"
 		"    InputSystemVersion:              0x%lx\n"
-		"[*]offsets:\n"
+		"[*] offsets:\n"
 		"    dwEntityList:                    0x%lx\n"
 		"    dwClientState:                   0x%lx\n"
 		"    m_dwGetLocalPlayer:              0x%x\n"
@@ -115,7 +115,7 @@ bool u_static::initialize()
 		"    m_dwClientState:                 0x%x\n"
 		"    m_dwGlowObjectManager:           0x%x\n"
 		"    m_dwForceJump:                   0x%x\n"
-		"[*]netvars:\n"
+		"[*] netvars:\n"
 		"    DT_BasePlayer:                   m_iHealth:           0x%x\n"
 		"    DT_BasePlayer:                   m_vecViewOffset:     0x%x\n"
 		"    DT_BasePlayer:                   m_lifeState:         0x%x\n"
@@ -131,7 +131,7 @@ bool u_static::initialize()
 		"    DT_CSPlayer:                     m_bIsScoped:         0x%x\n"
 		"    DT_CSPlayer:                     m_flFlashDuration:   0x%x\n"
 		"    DT_BaseAnimating:                m_dwBoneMatrix:      0x%x\n"
-		"[*]convars:\n"
+		"[*] convars:\n"
 		"    sensitivity:                     %ff\n"
 		"    volume:                          %ff\n"
 		"    cl_crosshairsize:                %ff\n"

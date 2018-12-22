@@ -15,8 +15,10 @@ public:
 	struct {
 		int aimbot = VK_F1;
 		int triggerbot = VK_F2;
-		int bunnyhop = VK_F3;
-		int reload_config = VK_F4;
+		int glow = VK_F3;
+		int chams = VK_F4;
+		int bunnyhop = VK_F5;
+		int reload_config = VK_F6;
 		int panic = VK_END;
 	} hotkeys;
 

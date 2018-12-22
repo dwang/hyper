@@ -11,11 +11,13 @@ public:
 	void glow();
 	void chams();
 	void radar();
+	void esp();
 	void no_hands();
 	bool glow_enabled = false;
 	bool chams_enabled = false;
 	bool radar_enabled = false;
 	bool no_hands_enabled = false;
+	float model_ambient_min;
 private:
 	struct glow_object_t {
 		csptr_t				m_ent;

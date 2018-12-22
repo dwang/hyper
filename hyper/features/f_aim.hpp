@@ -8,12 +8,14 @@ class f_aim {
 public:
 	void aimbot();
 	void triggerbot();
+	float sensitivity;
+	float flsensitivity;
+	int mp_teammates_are_enemies;
 
 	bool aimbot_enabled, triggerbot_enabled;
 private:
 	int current_tick, previous_tick;
 	cs_player target;
-	float flsensitivity;
 
 	int crosshair_id(vec3 vangle, cs_player self);
 	void aim_at_target(vec3 vangle, vec3 angle);

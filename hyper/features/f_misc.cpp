@@ -12,7 +12,7 @@ void f_misc::bunnyhop()
 {
 	while (true)
 	{
-		if (!engine::IsInGame() /*|| !bunnyhop_enabled*/)
+		if (!engine::IsInGame() || !bunnyhop_enabled)
 			continue;
 
 		if (GetAsyncKeyState(VK_SPACE) & 0x8000)

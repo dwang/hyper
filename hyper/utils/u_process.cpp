@@ -245,6 +245,19 @@ uintptr_t u_process::get_module_size(const wchar_t* module_name)
 	return pImage_Optional_Header->SizeOfCode;
 }
 
+bool u_process::free_memory(void* address, size_t size) {
+	return windows::VirtualFreeEx(_handle, address, size, MEM_RELEASE);
+}
+void* u_process::allocate(size_t size) {
+	return windows::VirtualAllocEx(_handle, 0, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+}
+
+void u_process::execute(void* shellcode, void* parameter) {
+	auto execute_thread = windows::CreateRemoteThread(_handle, nullptr, NULL, static_cast<windows::LPTHREAD_START_ROUTINE>(shellcode), parameter, NULL, nullptr);
+	windows::WaitForSingleObject(execute_thread, INFINITE);
+	windows::CloseHandle(execute_thread);
+}
+
 static void *create_snapshot()
 {
 	struct process_snap *snap = new process_snap;

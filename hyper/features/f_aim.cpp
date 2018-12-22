@@ -31,7 +31,7 @@ int f_aim::crosshair_id(vec3 vangle, cs_player self)
 
 		id = entity.get_team_num();
 
-		if (!cvar::find("mp_teammates_are_enemies").GetInt() && self.get_team_num() == id)
+		if (!mp_teammates_are_enemies && self.get_team_num() == id)
 			continue;
 
 		id -= 2;
@@ -77,7 +77,7 @@ bool f_aim::get_target(cs_player self, vec3 vangle)
 		if (!entity.is_valid())
 			continue;
 
-		if (!cvar::find("mp_teammates_are_enemies").GetInt() && self.get_team_num() == entity.get_team_num())
+		if (!mp_teammates_are_enemies && self.get_team_num() == entity.get_team_num())
 			continue;
 
 		fov = get_fov(vangle, get_target_angle(self, entity));
@@ -190,21 +190,22 @@ void f_aim::triggerbot()
 	cs_player self;
 	vec3 vangle;
 
-	while (engine::IsRunning())
+	while (true)
 	{
-		if (engine::IsInGame())
-		{
-			if (triggerbot_enabled && inputsystem::IsButtonDown(cs_config->triggerbot.button))
-			{
-				self = entity::GetClientEntity(engine::GetLocalPlayer());
-				vangle = engine::GetViewAngles();
+		if (!engine::IsInGame() || !triggerbot_enabled)
+			continue;
 
-				if (crosshair_id(vangle, self))
-				{
-					mouse1_down();
-					std::this_thread::sleep_for(std::chrono::milliseconds(100));
-					mouse1_up();
-				}
+		if (inputsystem::IsButtonDown(cs_config->triggerbot.button))
+		{
+			self = entity::GetClientEntity(engine::GetLocalPlayer());
+			vangle = engine::GetViewAngles();
+
+			if (crosshair_id(vangle, self))
+			{
+				mouse1_down();
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				mouse1_up();
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 			}
 		}
 
@@ -217,31 +218,31 @@ void f_aim::aimbot()
 	cs_player self;
 	vec3 vangle;
 
-	while (engine::IsRunning())
+	while (true)
 	{
-		if (engine::IsInGame())
+		if (!engine::IsInGame() || !aimbot_enabled)
+			continue;
+
+		self = entity::GetClientEntity(engine::GetLocalPlayer());
+		vangle = engine::GetViewAngles();
+		current_tick = self.get_tick_count();
+		flsensitivity = sensitivity;
+
+		if (self.is_scoped())
+			flsensitivity = (self.get_fov() / 90.0f) * flsensitivity;
+
+		if (inputsystem::IsButtonDown(cs_config->aimbot.button))
 		{
-			self = entity::GetClientEntity(engine::GetLocalPlayer());
-			vangle = engine::GetViewAngles();
-			current_tick = self.get_tick_count();
-			flsensitivity = cvar::find("sensitivity").GetFloat();
+			if (!target.is_valid() && !get_target(self, vangle))
+				return;
 
-			if (self.is_scoped())
-				flsensitivity = (self.get_fov() / 90.0f) * flsensitivity;
-
-			if (aimbot_enabled && inputsystem::IsButtonDown(cs_config->aimbot.button))
-			{
-				if (!target.is_valid() && !get_target(self, vangle))
-					return;
-
-				aim_at_target(vangle, get_target_angle(self, target));
-			}
-			else
-			{
-				target = {};
-			}
+			aim_at_target(vangle, get_target_angle(self, target));
 		}
+		else
+		{
+			target = {};
+		}	
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(15));
 	}
 }

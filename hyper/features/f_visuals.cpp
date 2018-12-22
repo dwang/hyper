@@ -9,6 +9,11 @@
 
 f_visuals* cs_visuals = new f_visuals();
 
+void f_visuals::esp()
+{
+	
+}
+
 void f_visuals::glow()
 {
 	auto set_glow_clr = [](glow_object_t* object, u_color color, int glow_style, float bloom = 1.0f) {
@@ -25,7 +30,7 @@ void f_visuals::glow()
 
 	while (true)
 	{
-		if (!engine::IsInGame() /*|| !glow_enabled*/)
+		if (!engine::IsInGame() || !glow_enabled)
 			continue;
 
 		uintptr_t obj_manager = cs_process->read<uintptr_t>(cs_static->client_dll + cs_static->m_dwGlowObjectManager);
@@ -64,12 +69,12 @@ void f_visuals::chams()
 
 	while (true)
 	{
-		if (!engine::IsInGame() /*|| !chams_enabled*/)
+		if (!engine::IsInGame() || !chams_enabled)
 			continue;
 
 		self = entity::GetClientEntity(engine::GetLocalPlayer());
 
-		for (int i = 1; i < 1337; i++)
+		for (int i = 1; i < 500; i++)
 		{
 			entity = entity::GetClientEntity(i);
 
@@ -77,13 +82,13 @@ void f_visuals::chams()
 				cs_process->write<u_color>(entity.get_pointer() + 0x70, entity.get_team_num() == self.get_team_num() ? u_color(1.0f, 0.17f, 0.37f, 0.7f) : u_color(0.17f, 0.67f, 0.8f, 0.7f));
 			else if (entity.get_class_id() == CPredictedViewModel)
 			{
-				cs_process->write<BYTE>(entity.get_pointer() + 0x70, BYTE(237));
-				cs_process->write<BYTE>(entity.get_pointer() + 0x71, BYTE(80));
-				cs_process->write<BYTE>(entity.get_pointer() + 0x72, BYTE(192));
+				cs_process->write<BYTE>(entity.get_pointer() + 0x70, 237);
+				cs_process->write<BYTE>(entity.get_pointer() + 0x71, 80);
+				cs_process->write<BYTE>(entity.get_pointer() + 0x72, 192);
 			}
 		}
 
-		if (cvar::find("r_modelAmbientMin").GetFloat() != 10)
+		if (model_ambient_min != 10)
 		{
 			cvar::find("r_modelAmbientMin").SetFloat(10);
 		}
@@ -102,7 +107,7 @@ void f_visuals::no_hands()
 
 		cs_process->write<int>(cs_process->read<uintptr_t>(cs_static->client_dll + cs_static->m_dwLocalPlayer) + 0x258, 0);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
