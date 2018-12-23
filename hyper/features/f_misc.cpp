@@ -10,19 +10,11 @@ f_misc* cs_misc = new f_misc();
 
 void f_misc::bunnyhop()
 {
-	while (true)
+	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
-		if (!engine::IsInGame() || !bunnyhop_enabled)
-			continue;
-
-		if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+		if (entity::GetClientEntity(engine::GetLocalPlayer()).is_on_ground())
 		{
-			if (entity::GetClientEntity(engine::GetLocalPlayer()).is_on_ground())
-			{
-				cs_process->write<int>(cs_static->client_dll + cs_static->m_dwForceJump, 6);
-			}
+			cs_process->write<int>(cs_static->client_dll + cs_static->m_dwForceJump, 6);
 		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }

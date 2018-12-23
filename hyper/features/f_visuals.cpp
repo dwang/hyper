@@ -28,37 +28,29 @@ void f_visuals::glow()
 	cs_player self;
 	cs_player entity;
 
-	while (true)
+	uintptr_t obj_manager = cs_process->read<uintptr_t>(cs_static->client_dll + cs_static->m_dwGlowObjectManager);
+
+	self = entity::GetClientEntity(engine::GetLocalPlayer());
+
+	for (int i = 1; i < engine::GetMaxClients(); i++)
 	{
-		if (!engine::IsInGame() || !glow_enabled)
+		entity = entity::GetClientEntity(i);
+
+		glow_object_t object = cs_process->read<glow_object_t>(obj_manager + entity.get_glow_index() * 0x38);
+
+		if (!object.m_ent || object.m_ent == self.get_pointer() || entity.is_dormant())
 			continue;
 
-		uintptr_t obj_manager = cs_process->read<uintptr_t>(cs_static->client_dll + cs_static->m_dwGlowObjectManager);
-
-		self = entity::GetClientEntity(engine::GetLocalPlayer());
-
-		for (int i = 1; i < engine::GetMaxClients(); i++)
+		switch (entity.get_class_id())
 		{
-			entity = entity::GetClientEntity(i);
-
-			glow_object_t object = cs_process->read<glow_object_t>(obj_manager + entity.get_glow_index() * 0x38);
-
-			if (!object.m_ent || object.m_ent == self.get_pointer() || entity.is_dormant())
-				continue;
-
-			switch (entity.get_class_id())
+		case CCSPlayer:
+			if (entity.is_valid())
 			{
-			case CCSPlayer:
-				if (entity.is_valid())
-				{
-					set_glow_clr(&object, entity.get_team_num() == self.get_team_num() ? u_color(0.17f, 0.67f, 0.8f, 0.7f) : u_color(1.0f, 0.17f, 0.37f, 0.7f), chams_enabled ? 1 : 0);
-					cs_process->write<glow_object_t>(obj_manager + entity.get_glow_index() * 0x38, object);
-				}
-				break;
+				set_glow_clr(&object, entity.get_team_num() == self.get_team_num() ? u_color(0.17f, 0.67f, 0.8f, 0.7f) : u_color(1.0f, 0.17f, 0.37f, 0.7f), chams_enabled ? 1 : 0);
+				cs_process->write<glow_object_t>(obj_manager + entity.get_glow_index() * 0x38, object);
 			}
+			break;
 		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
@@ -67,48 +59,31 @@ void f_visuals::chams()
 	cs_player self;
 	cs_player entity;
 
-	while (true)
+	self = entity::GetClientEntity(engine::GetLocalPlayer());
+
+	for (int i = 1; i < 500; i++)
 	{
-		if (!engine::IsInGame() || !chams_enabled)
-			continue;
+		entity = entity::GetClientEntity(i);
 
-		self = entity::GetClientEntity(engine::GetLocalPlayer());
-
-		for (int i = 1; i < 500; i++)
+		if (entity.get_class_id() == CCSPlayer)
+			cs_process->write<u_color>(entity.get_pointer() + 0x70, entity.get_team_num() == self.get_team_num() ? u_color(1.0f, 0.17f, 0.37f, 0.7f) : u_color(0.17f, 0.67f, 0.8f, 0.7f));
+		else if (entity.get_class_id() == CPredictedViewModel)
 		{
-			entity = entity::GetClientEntity(i);
-
-			if (entity.get_class_id() == CCSPlayer)
-				cs_process->write<u_color>(entity.get_pointer() + 0x70, entity.get_team_num() == self.get_team_num() ? u_color(1.0f, 0.17f, 0.37f, 0.7f) : u_color(0.17f, 0.67f, 0.8f, 0.7f));
-			else if (entity.get_class_id() == CPredictedViewModel)
-			{
-				cs_process->write<BYTE>(entity.get_pointer() + 0x70, 237);
-				cs_process->write<BYTE>(entity.get_pointer() + 0x71, 80);
-				cs_process->write<BYTE>(entity.get_pointer() + 0x72, 192);
-			}
+			cs_process->write<BYTE>(entity.get_pointer() + 0x70, 237);
+			cs_process->write<BYTE>(entity.get_pointer() + 0x71, 80);
+			cs_process->write<BYTE>(entity.get_pointer() + 0x72, 192);
 		}
-
-		if (model_ambient_min != 10)
-		{
-			cvar::find("r_modelAmbientMin").SetFloat(10);
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
+	if (model_ambient_min != 10)
+	{
+		cvar::find("r_modelAmbientMin").SetFloat(10);
+	}
 }
 
 void f_visuals::no_hands()
 {
-	while (true)
-	{
-		if (!engine::IsInGame())
-			continue;
-
-		cs_process->write<int>(cs_process->read<uintptr_t>(cs_static->client_dll + cs_static->m_dwLocalPlayer) + 0x258, 0);
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
+	cs_process->write<int>(cs_process->read<uintptr_t>(cs_static->client_dll + cs_static->m_dwLocalPlayer) + 0x258, 0);
 }
 
 void f_visuals::radar()

@@ -11,12 +11,62 @@
 #include <thread>
 #include <iostream>
 
-void aimbot() { cs_aim->aimbot(); }
-void triggerbot() { cs_aim->triggerbot(); }
-void glow() { cs_visuals->glow(); }
-void chams() { cs_visuals->chams(); }
-void no_hands() { cs_visuals->no_hands(); }
-void bunnyhop() { cs_misc->bunnyhop(); }
+void aim()
+{
+	while (true)
+	{
+		if (!engine::IsInGame())
+			continue;
+
+		if (cs_aim->aimbot_enabled)
+			cs_aim->aimbot();
+
+		if (cs_aim->triggerbot_enabled)
+			cs_aim->triggerbot();
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+
+void visuals()
+{
+	while (true)
+	{
+		if (!engine::IsInGame())
+			continue;
+
+		if (cs_visuals->glow_enabled)
+			cs_visuals->glow();
+
+		if (cs_visuals->chams_enabled)
+			cs_visuals->chams();
+
+		cs_visuals->no_hands();
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+
+void misc()
+{
+	while (true)
+	{
+		if (!engine::IsInGame())
+			continue;
+
+		if (cs_misc->bunnyhop_enabled)
+			cs_misc->bunnyhop();
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+}
+
+//void menu()
+//{
+
+//}
+
+void bunnyhop() {  }
 void menu() { cs_menu->handle_messages(); }
 void set_window() { cs_directx->set_window_to_target(); }
 
@@ -34,21 +84,15 @@ int main()
 	cs_config->setup();
 	cs_config->load();
 
-	std::thread t_aimbot(aimbot);
-	std::thread t_triggerbot(triggerbot);
-	std::thread t_glow(glow);
-	std::thread t_chams(chams);
-	std::thread t_no_hands(no_hands);
-	std::thread t_bunnyhop(bunnyhop);
+	std::thread t_aim(aim);
+	std::thread t_visuals(visuals);
+	std::thread t_misc(misc);
 	std::thread t_menu(menu);
 	std::thread t_set_window(set_window);
 
-	t_aimbot.detach();
-	t_triggerbot.detach();
-	t_glow.detach();
-	t_chams.detach();
-	t_no_hands.detach();
-	t_bunnyhop.detach();
+	t_aim.detach();
+	t_visuals.detach();
+	t_misc.detach();
 	t_menu.detach();
 	t_set_window.detach();
 
@@ -105,8 +149,6 @@ int main()
 		if (GetAsyncKeyState(VK_INSERT) & 0x8000)
 		{
 			cs_menu->menu_open = !cs_menu->menu_open;
-			cs_menu->update_overlay_state();
-			Beep(330, 100);
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 
@@ -122,10 +164,9 @@ int main()
 		{
 			cvar::find("r_modelAmbientMin").SetFloat(0);
 			
-			t_aimbot.~thread();
-			t_triggerbot.~thread();
-			t_glow.~thread();
-			t_chams.~thread();
+			t_aim.~thread();
+			t_visuals.~thread();
+			t_misc.~thread();
 			t_menu.~thread();
 			t_set_window.~thread();
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));

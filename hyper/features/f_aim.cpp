@@ -190,26 +190,18 @@ void f_aim::triggerbot()
 	cs_player self;
 	vec3 vangle;
 
-	while (true)
+	if (inputsystem::IsButtonDown(cs_config->triggerbot.button))
 	{
-		if (!engine::IsInGame() || !triggerbot_enabled)
-			continue;
+		self = entity::GetClientEntity(engine::GetLocalPlayer());
+		vangle = engine::GetViewAngles();
 
-		if (inputsystem::IsButtonDown(cs_config->triggerbot.button))
+		if (crosshair_id(vangle, self))
 		{
-			self = entity::GetClientEntity(engine::GetLocalPlayer());
-			vangle = engine::GetViewAngles();
-
-			if (crosshair_id(vangle, self))
-			{
-				mouse1_down();
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
-				mouse1_up();
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-			}
+			mouse1_down();
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			mouse1_up();
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
@@ -218,31 +210,23 @@ void f_aim::aimbot()
 	cs_player self;
 	vec3 vangle;
 
-	while (true)
+	self = entity::GetClientEntity(engine::GetLocalPlayer());
+	vangle = engine::GetViewAngles();
+	current_tick = self.get_tick_count();
+	flsensitivity = sensitivity;
+
+	if (self.is_scoped())
+		flsensitivity = (self.get_fov() / 90.0f) * flsensitivity;
+
+	if (inputsystem::IsButtonDown(cs_config->aimbot.button))
 	{
-		if (!engine::IsInGame() || !aimbot_enabled)
-			continue;
+		if (!target.is_valid() && !get_target(self, vangle))
+			return;
 
-		self = entity::GetClientEntity(engine::GetLocalPlayer());
-		vangle = engine::GetViewAngles();
-		current_tick = self.get_tick_count();
-		flsensitivity = sensitivity;
-
-		if (self.is_scoped())
-			flsensitivity = (self.get_fov() / 90.0f) * flsensitivity;
-
-		if (inputsystem::IsButtonDown(cs_config->aimbot.button))
-		{
-			if (!target.is_valid() && !get_target(self, vangle))
-				return;
-
-			aim_at_target(vangle, get_target_angle(self, target));
-		}
-		else
-		{
-			target = {};
-		}	
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(15));
+		aim_at_target(vangle, get_target_angle(self, target));
+	}
+	else
+	{
+		target = {};
 	}
 }

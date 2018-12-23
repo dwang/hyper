@@ -36,6 +36,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 	return CallNextHookEx(cs_menu->hMouseHook, nCode, wParam, lParam);
 }
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void m_menu::initialize()
 {
 	WNDCLASSEX wClass;
@@ -56,16 +57,14 @@ void m_menu::initialize()
 		exit(1);
 
 	cs_directx->tWnd = FindWindow(0, "Counter-Strike: Global Offensive");
-	if (cs_directx->tWnd)
-	{
-		GetWindowRect(cs_directx->tWnd, &cs_directx->tSize);
-		cs_directx->width = cs_directx->tSize.right - cs_directx->tSize.left;
-		cs_directx->height = cs_directx->tSize.bottom - cs_directx->tSize.top;
-		cs_directx->hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED, "hyper", "hyper", WS_POPUP, 1, 1, cs_directx->width, cs_directx->height, 0, 0, 0, 0);
-		SetLayeredWindowAttributes(cs_directx->hWnd, 0, 1.0f, LWA_ALPHA);
-		SetLayeredWindowAttributes(cs_directx->hWnd, 0, RGB(0, 0, 0), LWA_COLORKEY);
-		ShowWindow(cs_directx->hWnd, SW_SHOW);
-	}
+
+	GetWindowRect(cs_directx->tWnd, &cs_directx->tSize);
+	cs_directx->width = cs_directx->tSize.right - cs_directx->tSize.left;
+	cs_directx->height = cs_directx->tSize.bottom - cs_directx->tSize.top;
+	cs_directx->hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_LAYERED, "hyper", "hyper", WS_POPUP, 1, 1, cs_directx->width, cs_directx->height, 0, 0, 0, 0);
+	SetLayeredWindowAttributes(cs_directx->hWnd, 0, 1.0f, LWA_ALPHA);
+	SetLayeredWindowAttributes(cs_directx->hWnd, 0, RGB(0, 0, 0), LWA_COLORKEY);
+	ShowWindow(cs_directx->hWnd, SW_SHOW);
 
 	cs_directx->directx_init();
 
@@ -85,6 +84,9 @@ LRESULT CALLBACK m_menu::WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM 
 {
 	MARGINS margin = { 0, 0, cs_directx->width, cs_directx->height };
 
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, Message, wParam, lParam))
+		return true;
+
 	switch (Message)
 	{
 	case WM_PAINT:
@@ -95,6 +97,22 @@ LRESULT CALLBACK m_menu::WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM 
 		DwmExtendFrameIntoClientArea(hWnd, &margin);
 		break;
 
+	case WM_SIZE:
+		if (cs_directx->p_Device != NULL && wParam != SIZE_MINIMIZED)
+		{
+			ImGui_ImplDX9_InvalidateDeviceObjects();
+			cs_directx->p_Params.BackBufferWidth = LOWORD(lParam);
+			cs_directx->p_Params.BackBufferHeight = HIWORD(lParam);
+			HRESULT hr = cs_directx->p_Device->Reset(&cs_directx->p_Params);
+			if (hr == D3DERR_INVALIDCALL)
+				IM_ASSERT(0);
+			ImGui_ImplDX9_CreateDeviceObjects();
+		}
+		return 0;
+	case WM_SYSCOMMAND:
+		if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+			return 0;
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(1);
 		return 0;
@@ -108,34 +126,40 @@ LRESULT CALLBACK m_menu::WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM 
 
 void m_menu::render()
 {
+	ImGui_ImplDX9_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+
 	if (menu_open)
 	{
-		ImGui_ImplDX9_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-		ImGui::NewFrame();
-
-		ImGui::ShowTestWindow();
-
-		ImGui::EndFrame();
-		ImGui::Render();
-		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+		update_overlay_state(true);
+		ImGui::Text("Hello, world!");
 	}
+	else
+	{
+		update_overlay_state(false);
+	}
+
+	ImGui::EndFrame();
+	ImGui::Render();
+	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 }
 
-void m_menu::update_overlay_state()
+void m_menu::update_overlay_state(bool can_click)
 {
-	long style = GetWindowLong(cs_directx->hWnd, GWL_EXSTYLE);
-	if (menu_open)
+	long style = GetWindowLong(cs_directx->tWnd, GWL_EXSTYLE);
+	if (can_click)
 	{
 		style &= ~WS_EX_LAYERED;
-		SetWindowLong(cs_directx->hWnd,
+		SetWindowLong(cs_directx->tWnd,
 			GWL_EXSTYLE, style);
-		SetForegroundWindow(cs_directx->hWnd);
+		SetForegroundWindow(cs_directx->tWnd);
 	}
 	else
 	{
 		style |= WS_EX_LAYERED;
-		SetWindowLong(cs_directx->hWnd,
+		SetWindowLong(cs_directx->tWnd,
 			GWL_EXSTYLE, style);
 	}
 }

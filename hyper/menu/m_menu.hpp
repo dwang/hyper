@@ -8,7 +8,7 @@ public:
 	void initialize();
 	void render();
 	void handle_messages();
-	void update_overlay_state();
+	void update_overlay_state(bool can_click);
 
 	static LRESULT CALLBACK WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 

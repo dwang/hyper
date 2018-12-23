@@ -30,7 +30,7 @@ int o_directx::directx_init()
 		D3DXCreateLine(p_Device, &p_Line);
 	//p_Line->SetAntialias(1); *removed cuz crosshair was blurred*
 
-	D3DXCreateFont(p_Device, 18, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Calibri", &pFontSmall);
+	D3DXCreateFont(p_Device, 18, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Verdana", &pFontSmall);
 
 	return 0;
 }
@@ -40,28 +40,16 @@ int o_directx::render()
 	p_Device->Clear(0, 0, D3DCLEAR_TARGET, 0, 1.0f, 0);
 	p_Device->BeginScene();
 
-	if (tWnd == GetForegroundWindow())
-	{
-		//text with shadow
-		cs_draw->DrawShadowString("hyper", 5, 0, 240, 240, 250, pFontSmall);
+	cs_draw->DrawString("hyper - " __DATE__, 5, 0, 240, 240, 250, pFontSmall);
 
-		//text without shadow
-		cs_draw->DrawString("hyper", 5, 15, 240, 240, 250, pFontSmall);
 
-		//colored rects
-		cs_draw->FillRGB(30, 40, 10, 10, 255, 0, 0, 155);
-		cs_draw->FillRGB(30, 60, 10, 10, 0, 255, 0, 155);
-		cs_draw->FillRGB(30, 80, 10, 10, 0, 0, 255, 155);
-
-		//crosshair
-		cs_draw->FillRGB(width / 2 - 22, height / 2, 44, 1, 240, 240, 250, 255);
-		cs_draw->FillRGB(width / 2, height / 2 - 22, 1, 44, 240, 240, 250, 255);
-	}
+	cs_draw->FillRGB(width / 2 - 22, height / 2, 44, 1, 240, 240, 250, 255);
+	cs_draw->FillRGB(width / 2, height / 2 - 22, 1, 44, 240, 240, 250, 255);
+	
+	cs_menu->render();
 
 	p_Device->EndScene();
 	p_Device->PresentEx(0, 0, 0, 0, 0);
-
-	cs_menu->render();
 
 	return 0;
 }
