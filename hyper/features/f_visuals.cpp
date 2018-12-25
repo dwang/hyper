@@ -3,10 +3,6 @@
 #include "../utils/u_process.hpp"
 #include "../sdk/cs_engine.hpp"
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <thread>
-
 f_visuals* cs_visuals = new f_visuals();
 
 void f_visuals::esp()
@@ -46,7 +42,7 @@ void f_visuals::glow()
 		case CCSPlayer:
 			if (entity.is_valid())
 			{
-				set_glow_clr(&object, entity.get_team_num() == self.get_team_num() ? u_color(0.17f, 0.67f, 0.8f, 0.7f) : u_color(1.0f, 0.17f, 0.37f, 0.7f), chams_enabled ? 1 : 0);
+				set_glow_clr(&object, entity.get_team_num() == self.get_team_num() ? u_color(0.17f, 0.67f, 0.8f, 0.7f) : u_color(1.0f, 0.35f, 0.70f, 0.7f), chams_enabled ? 1 : 0);
 				cs_process->write<glow_object_t>(obj_manager + entity.get_glow_index() * 0x38, object);
 			}
 			break;
@@ -66,18 +62,17 @@ void f_visuals::chams()
 		entity = entity::GetClientEntity(i);
 
 		if (entity.get_class_id() == CCSPlayer)
-			cs_process->write<u_color>(entity.get_pointer() + 0x70, entity.get_team_num() == self.get_team_num() ? u_color(1.0f, 0.17f, 0.37f, 0.7f) : u_color(0.17f, 0.67f, 0.8f, 0.7f));
+			cs_process->write<model_color>(entity.get_pointer() + 0x70, entity.get_team_num() == self.get_team_num() ? model_color(43, 92, 204) : model_color(255, 43, 94));
 		else if (entity.get_class_id() == CPredictedViewModel)
 		{
-			cs_process->write<BYTE>(entity.get_pointer() + 0x70, 237);
-			cs_process->write<BYTE>(entity.get_pointer() + 0x71, 80);
-			cs_process->write<BYTE>(entity.get_pointer() + 0x72, 192);
+			model_color color = cs_process->read<model_color>(entity.get_pointer() + 0x70);
+			cs_process->write<model_color>(entity.get_pointer() + 0x70, viewmodel_chams_enabled ? model_color(237, 80, 192) : model_color(50, 50, 50));
 		}
 	}
 
-	if (model_ambient_min != 10)
+	if (model_ambient_min != 30)
 	{
-		cvar::find("r_modelAmbientMin").SetFloat(10);
+		cvar::find("r_modelAmbientMin").SetFloat(30);
 	}
 }
 

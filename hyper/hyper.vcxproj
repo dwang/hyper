@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -16,6 +16,7 @@
     <ClCompile Include="features\f_aim.cpp" />
     <ClCompile Include="features\f_backtrack.cpp" />
     <ClCompile Include="features\f_misc.cpp" />
+    <ClCompile Include="features\f_skinchanger.cpp" />
     <ClCompile Include="features\f_visuals.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="features\f_aim.hpp" />
     <ClInclude Include="features\f_backtrack.hpp" />
     <ClInclude Include="features\f_misc.hpp" />
+    <ClInclude Include="features\f_skinchanger.hpp" />
     <ClInclude Include="features\f_visuals.hpp" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />

@@ -2,11 +2,10 @@
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_dx9.h"
 #include "../imgui/imgui_impl_win32.h"
-#include <thread>
 
 m_menu* cs_menu = new m_menu();
 
-
+/*
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
 	if (cs_menu->menu_open)
@@ -34,9 +33,9 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	return CallNextHookEx(cs_menu->hMouseHook, nCode, wParam, lParam);
-}
+}*/
 
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+//extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void m_menu::initialize()
 {
 	WNDCLASSEX wClass;
@@ -53,11 +52,9 @@ void m_menu::initialize()
 	wClass.lpszMenuName = "hyper";
 	wClass.style = CS_VREDRAW | CS_HREDRAW;
 
-	if (!RegisterClassEx(&wClass))
-		exit(1);
+	RegisterClassEx(&wClass);
 
 	cs_directx->tWnd = FindWindow(0, "Counter-Strike: Global Offensive");
-
 	GetWindowRect(cs_directx->tWnd, &cs_directx->tSize);
 	cs_directx->width = cs_directx->tSize.right - cs_directx->tSize.left;
 	cs_directx->height = cs_directx->tSize.bottom - cs_directx->tSize.top;
@@ -67,7 +64,7 @@ void m_menu::initialize()
 	ShowWindow(cs_directx->hWnd, SW_SHOW);
 
 	cs_directx->directx_init();
-
+	/*
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.DeltaTime = 1.0f / 60.0f;
@@ -77,15 +74,15 @@ void m_menu::initialize()
 	ImGui_ImplWin32_Init(cs_directx->hWnd);
 	ImGui_ImplDX9_Init(cs_directx->p_Device);
 	MouseHook = SetWindowsHookEx(WH_MOUSE, MouseProc, 0, GetCurrentThreadId());
-	ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+	ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\Arial.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());*/
 }
 
 LRESULT CALLBACK m_menu::WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	MARGINS margin = { 0, 0, cs_directx->width, cs_directx->height };
 
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, Message, wParam, lParam))
-		return true;
+	//if (ImGui_ImplWin32_WndProcHandler(hWnd, Message, wParam, lParam))
+		//return true;
 
 	switch (Message)
 	{
@@ -96,7 +93,7 @@ LRESULT CALLBACK m_menu::WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM 
 	case WM_CREATE:
 		DwmExtendFrameIntoClientArea(hWnd, &margin);
 		break;
-
+		/*
 	case WM_SIZE:
 		if (cs_directx->p_Device != NULL && wParam != SIZE_MINIMIZED)
 		{
@@ -113,6 +110,7 @@ LRESULT CALLBACK m_menu::WinProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM 
 		if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
 			return 0;
 		break;
+	*/
 	case WM_DESTROY:
 		PostQuitMessage(1);
 		return 0;
@@ -129,7 +127,6 @@ void m_menu::render()
 	ImGui_ImplDX9_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-
 
 	if (menu_open)
 	{
@@ -166,16 +163,9 @@ void m_menu::update_overlay_state(bool can_click)
 
 void m_menu::handle_messages()
 {
-	initialize();
-
-	while (true)
+	if (PeekMessage(&cs_directx->message, cs_directx->hWnd, 0, 0, PM_REMOVE))
 	{
-		if (PeekMessage(&cs_directx->message, cs_directx->hWnd, 0, 0, PM_REMOVE))
-		{
-			DispatchMessage(&cs_directx->message);
-			TranslateMessage(&cs_directx->message);
-		}
-		
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+		DispatchMessage(&cs_directx->message);
+		TranslateMessage(&cs_directx->message);
 	}
 }

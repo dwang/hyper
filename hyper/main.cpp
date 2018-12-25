@@ -2,6 +2,7 @@
 #include "features/f_aim.hpp"
 #include "features/f_visuals.hpp"
 #include "features/f_misc.hpp"
+#include "features/f_skinchanger.hpp"
 #include "config/c_config.hpp"
 #include "config/c_files.hpp"
 #include "menu/m_console_menu.hpp"
@@ -41,6 +42,9 @@ void visuals()
 		if (cs_visuals->chams_enabled)
 			cs_visuals->chams();
 
+		if (!cs_visuals->chams_enabled)
+			cvar::find("r_modelAmbientMin").SetFloat(0);
+
 		cs_visuals->no_hands();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -61,14 +65,23 @@ void misc()
 	}
 }
 
-//void menu()
-//{
+void skinchanger()
+{
+	cs_skinchanger->skinchanger();
+}
 
-//}
+void menu()
+{
+	cs_menu->initialize();
 
-void bunnyhop() {  }
-void menu() { cs_menu->handle_messages(); }
-void set_window() { cs_directx->set_window_to_target(); }
+	while (true)
+	{
+		cs_menu->handle_messages();
+		cs_directx->set_window_to_target();
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+	}
+}
 
 int main()
 {
@@ -88,13 +101,13 @@ int main()
 	std::thread t_visuals(visuals);
 	std::thread t_misc(misc);
 	std::thread t_menu(menu);
-	std::thread t_set_window(set_window);
+	std::thread t_skinchanger(skinchanger);
 
 	t_aim.detach();
 	t_visuals.detach();
 	t_misc.detach();
 	t_menu.detach();
-	t_set_window.detach();
+	t_skinchanger.detach();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
@@ -168,7 +181,6 @@ int main()
 			t_visuals.~thread();
 			t_misc.~thread();
 			t_menu.~thread();
-			t_set_window.~thread();
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			cs_process->detach();
 			break;

@@ -3,7 +3,6 @@
 #include "../utils/u_static.hpp"
 #include "../utils/u_process.hpp"
 
-#include <thread>
 #include <Windows.h>
 
 f_misc* cs_misc = new f_misc();

@@ -16,12 +16,12 @@ public:
 	ID3DXLine* p_Line;
 	ID3DXFont* pFontSmall;
 
-	int directx_init();
+	void directx_init();
 	int render();
 	void set_window_to_target();
 
-	int height = 1600;
-	int width = 2560;
+	int height = 1;
+	int width = 1;
 
 	HWND tWnd;
 	HWND hWnd;

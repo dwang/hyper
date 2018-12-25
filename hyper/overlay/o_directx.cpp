@@ -6,10 +6,9 @@
 
 o_directx* cs_directx = new o_directx();
 
-int o_directx::directx_init()
+void o_directx::directx_init()
 {
-	if (FAILED(Direct3DCreate9Ex(D3D_SDK_VERSION, &p_Object)))
-		exit(1);
+	Direct3DCreate9Ex(D3D_SDK_VERSION, &p_Object);
 
 	ZeroMemory(&p_Params, sizeof(p_Params));
 	p_Params.Windowed = TRUE;
@@ -23,16 +22,12 @@ int o_directx::directx_init()
 	p_Params.AutoDepthStencilFormat = D3DFMT_D16;
 	p_Params.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
-	if (FAILED(p_Object->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &p_Params, 0, &p_Device)))
-		exit(1);
+	p_Object->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd, D3DCREATE_HARDWARE_VERTEXPROCESSING, &p_Params, 0, &p_Device);
 
 	if (!p_Line)
 		D3DXCreateLine(p_Device, &p_Line);
-	//p_Line->SetAntialias(1); *removed cuz crosshair was blurred*
 
 	D3DXCreateFont(p_Device, 18, 0, 0, 0, false, DEFAULT_CHARSET, OUT_CHARACTER_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Verdana", &pFontSmall);
-
-	return 0;
 }
 
 int o_directx::render()
@@ -40,13 +35,13 @@ int o_directx::render()
 	p_Device->Clear(0, 0, D3DCLEAR_TARGET, 0, 1.0f, 0);
 	p_Device->BeginScene();
 
-	cs_draw->DrawString("hyper - " __DATE__, 5, 0, 240, 240, 250, pFontSmall);
+	if (tWnd == GetForegroundWindow())
+	{
+		cs_draw->DrawString("hyper - " __DATE__, 5, 0, 240, 240, 250, pFontSmall);
 
-
-	cs_draw->FillRGB(width / 2 - 22, height / 2, 44, 1, 240, 240, 250, 255);
-	cs_draw->FillRGB(width / 2, height / 2 - 22, 1, 44, 240, 240, 250, 255);
-	
-	cs_menu->render();
+		cs_draw->FillRGB(width / 2 - 22, height / 2, 44, 1, 240, 240, 250, 255);
+		cs_draw->FillRGB(width / 2, height / 2 - 22, 1, 44, 240, 240, 250, 255);
+	}
 
 	p_Device->EndScene();
 	p_Device->PresentEx(0, 0, 0, 0, 0);
@@ -56,23 +51,14 @@ int o_directx::render()
 
 void o_directx::set_window_to_target()
 {
-	while (true)
+	GetWindowRect(tWnd, &tSize);
+	width = tSize.right - tSize.left;
+	height = tSize.bottom - tSize.top;
+	DWORD dwStyle = GetWindowLong(tWnd, GWL_STYLE);
+	if (dwStyle & WS_BORDER)
 	{
-		tWnd = FindWindowA(NULL, "Counter-Strike: Global Offensive");
-		if (tWnd)
-		{
-			GetWindowRect(tWnd, &tSize);
-			width = tSize.right - tSize.left;
-			height = tSize.bottom - tSize.top;
-			DWORD dwStyle = GetWindowLong(tWnd, GWL_STYLE);
-			if (dwStyle & WS_BORDER)
-			{
-				tSize.top += 23;
-				height -= 23;
-			}
-			MoveWindow(hWnd, tSize.left, tSize.top, width, height, true);
-		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		tSize.top += 23;
+		height -= 23;
 	}
+	MoveWindow(hWnd, tSize.left, tSize.top, width, height, true);
 }

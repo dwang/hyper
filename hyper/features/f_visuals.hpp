@@ -4,6 +4,8 @@
 #include "../sdk/cs_types.hpp"
 
 #include <inttypes.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
 class f_visuals
 {
@@ -17,6 +19,7 @@ public:
 	bool chams_enabled = false;
 	bool radar_enabled = false;
 	bool no_hands_enabled = false;
+	bool viewmodel_chams_enabled = false;
 	float model_ambient_min;
 private:
 	struct glow_object_t {
@@ -30,6 +33,22 @@ private:
 		bool				m_full_bloom;
 		uint8_t				pad_03[5];
 		int32_t				m_glow_style;
+	};
+
+	struct model_color {
+		BYTE r;
+		BYTE g;
+		BYTE b;
+
+		model_color()
+		{
+		}
+
+		model_color(BYTE red, BYTE green, BYTE blue) {
+			r = red;
+			g = green;
+			b = blue;
+		}
 	};
 };
 
